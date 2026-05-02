@@ -1,0 +1,23 @@
+# Configuration for Instagram & YouTube Downloader
+
+system:
+  download_dir: "./downloads"
+  log_dir: "./logs"
+  max_parallel_downloads: 3
+
+instagram:
+  session_file: "session-username"
+  max_retries: 3
+  rate_limit_delay_seconds: 5
+  viral_weights:
+    likes: 1.0
+    comments: 2.0
+    recency_decay: 0.95
+
+youtube:
+  default_quality: "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best"
+  extract_audio_quality: "192"
+
+api:
+  host: "127.0.0.1"
+  port: 8000
