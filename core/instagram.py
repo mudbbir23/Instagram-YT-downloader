@@ -84,6 +84,8 @@ class InstagramDownloader(BaseDownloader):
             # Assume it's a profile
             parts = [p for p in url.strip('/').split('/') if p]
             username = parts[-1]
+            if username.startswith('@'):
+                username = username[1:]
             limit = kwargs.get("limit", 10)
             return {"status": "batch", "results": self.download_profile(username, limit)}
 

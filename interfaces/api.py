@@ -32,7 +32,7 @@ async def shutdown_event():
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="index.html")
 
 @app.post("/api/download/youtube")
 async def api_download_youtube(url: str = Form(...), audio_only: bool = Form(False)):
@@ -58,17 +58,24 @@ async def api_download_instagram(url: str = Form(...), limit: int = Form(10)):
 async def api_download_viral(username: str = Form(...), limit: int = Form(5), analyze: int = Form(50)):
     task_id = str(uuid.uuid4())
     
+    # Extract raw username from input (handles URLs and @mentions)
+    clean_username = username.strip().strip('/')
+    if 'instagram.com' in clean_username:
+        clean_username = [p for p in clean_username.split('/') if p][-1]
+    if clean_username.startswith('@'):
+        clean_username = clean_username[1:]
+        
     async def _viral_task():
         ve = ViralEngine(ig_downloader.L)
-        viral_posts = ve.get_top_viral_posts(username, limit=limit, analyze_last=analyze)
+        viral_posts = ve.get_top_viral_posts(clean_username, limit=limit, analyze_last=analyze)
         results = []
         for vp in viral_posts:
             # Running sync in a thread executor or directly here since it's in a queue worker
-            res = ig_downloader.download_post(vp['shortcode'], username)
+            res = ig_downloader.download_post(vp['shortcode'], clean_username)
             results.append(res)
         return {"status": "batch", "results": results}
         
-    await queue_manager.add_task(task_id, "viral", username, _viral_task)
+    await queue_manager.add_task(task_id, "viral", clean_username, _viral_task)
     return {"status": "queued", "task_id": task_id}
 
 @app.get("/api/status")
