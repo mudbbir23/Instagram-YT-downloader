@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaS Downloader</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen font-sans antialiased">
+    <div class="container mx-auto px-4 py-12 max-w-4xl">
+        <header class="text-center mb-12">
+            <h1 class="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
+                Ultimate Downloader
+            </h1>
+            <p class="text-gray-400 text-lg">YouTube & Instagram Media Extraction Platform</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <!-- YouTube Form -->
+            <div class="glass p-6 rounded-2xl shadow-xl transition hover:shadow-2xl hover:border-pink-500/30">
+                <h2 class="text-2xl font-bold mb-6 flex items-center text-red-500">
+                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                    YouTube
+                </h2>
+                <form id="yt-form" onsubmit="submitYT(event)">
+                    <input type="text" id="yt-url" placeholder="Video or Playlist URL" class="w-full bg-gray-800 rounded-lg p-3 mb-4 focus:ring-2 focus:ring-red-500 outline-none" required>
+                    <label class="flex items-center mb-4 text-gray-300">
+                        <input type="checkbox" id="yt-audio" class="mr-2 rounded text-red-500 focus:ring-red-500 bg-gray-800 border-gray-700">
+                        Extract Audio Only
+                    </label>
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-[1.02]">
+                        Download
+                    </button>
+                </form>
+            </div>
+
+            <!-- Instagram Form -->
+            <div class="glass p-6 rounded-2xl shadow-xl transition hover:shadow-2xl hover:border-violet-500/30">
+                <h2 class="text-2xl font-bold mb-6 flex items-center text-pink-500">
+                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    Instagram
+                </h2>
+                
+                <div class="mb-4 flex space-x-2">
+                    <button id="tab-normal" class="flex-1 py-2 text-sm font-semibold border-b-2 border-pink-500 text-pink-500" onclick="switchTab('normal')">Standard</button>
+                    <button id="tab-viral" class="flex-1 py-2 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-pink-400" onclick="switchTab('viral')">Viral Engine</button>
+                </div>
+
+                <!-- Normal Insta Form -->
+                <form id="ig-normal-form" onsubmit="submitIG(event)">
+                    <input type="text" id="ig-url" placeholder="URL or @username" class="w-full bg-gray-800 rounded-lg p-3 mb-4 focus:ring-2 focus:ring-pink-500 outline-none" required>
+                    <input type="number" id="ig-limit" placeholder="Limit (e.g. 10)" value="10" class="w-full bg-gray-800 rounded-lg p-3 mb-4 focus:ring-2 focus:ring-pink-500 outline-none">
+                    <button type="submit" class="w-full bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-[1.02]">
+                        Download
+                    </button>
+                </form>
+
+                <!-- Viral Insta Form -->
+                <form id="ig-viral-form" class="hidden" onsubmit="submitViral(event)">
+                    <input type="text" id="viral-user" placeholder="@username" class="w-full bg-gray-800 rounded-lg p-3 mb-4 focus:ring-2 focus:ring-violet-500 outline-none" required>
+                    <div class="flex space-x-4 mb-4">
+                        <input type="number" id="viral-limit" placeholder="Top N" value="5" class="w-1/2 bg-gray-800 rounded-lg p-3 focus:ring-2 focus:ring-violet-500 outline-none">
+                        <input type="number" id="viral-analyze" placeholder="Analyze" value="50" class="w-1/2 bg-gray-800 rounded-lg p-3 focus:ring-2 focus:ring-violet-500 outline-none">
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-[1.02]">
+                        Engage Viral Engine
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Task Queue -->
+        <div class="glass p-6 rounded-2xl shadow-xl">
+            <h3 class="text-xl font-bold mb-4">Live Queue Status</h3>
+            <div id="queue-list" class="space-y-3 max-h-64 overflow-y-auto pr-2">
+                <div class="text-gray-500 text-center italic">No active downloads</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            const normalForm = document.getElementById('ig-normal-form');
+            const viralForm = document.getElementById('ig-viral-form');
+            const normalTab = document.getElementById('tab-normal');
+            const viralTab = document.getElementById('tab-viral');
+
+            if (tab === 'normal') {
+                normalForm.classList.remove('hidden');
+                viralForm.classList.add('hidden');
+                normalTab.classList.replace('border-transparent', 'border-pink-500');
+                normalTab.classList.replace('text-gray-500', 'text-pink-500');
+                viralTab.classList.replace('border-pink-500', 'border-transparent');
+                viralTab.classList.replace('text-pink-500', 'text-gray-500');
+            } else {
+                normalForm.classList.add('hidden');
+                viralForm.classList.remove('hidden');
+                viralTab.classList.replace('border-transparent', 'border-pink-500');
+                viralTab.classList.replace('text-gray-500', 'text-pink-500');
+                normalTab.classList.replace('border-pink-500', 'border-transparent');
+                normalTab.classList.replace('text-pink-500', 'text-gray-500');
+            }
+        }
+
+        async function submitYT(e) {
+            e.preventDefault();
+            const url = document.getElementById('yt-url').value;
+            const audio = document.getElementById('yt-audio').checked;
+            
+            const formData = new FormData();
+            formData.append('url', url);
+            formData.append('audio_only', audio);
+            
+            await fetch('/api/download/youtube', { method: 'POST', body: formData });
+            document.getElementById('yt-url').value = '';
+            refreshQueue();
+        }
+
+        async function submitIG(e) {
+            e.preventDefault();
+            const url = document.getElementById('ig-url').value;
+            const limit = document.getElementById('ig-limit').value;
+            
+            const formData = new FormData();
+            formData.append('url', url);
+            formData.append('limit', limit);
+            
+            await fetch('/api/download/instagram', { method: 'POST', body: formData });
+            document.getElementById('ig-url').value = '';
+            refreshQueue();
+        }
+
+        async function submitViral(e) {
+            e.preventDefault();
+            const user = document.getElementById('viral-user').value;
+            const limit = document.getElementById('viral-limit').value;
+            const analyze = document.getElementById('viral-analyze').value;
+            
+            const formData = new FormData();
+            formData.append('username', user);
+            formData.append('limit', limit);
+            formData.append('analyze', analyze);
+            
+            await fetch('/api/download/viral', { method: 'POST', body: formData });
+            document.getElementById('viral-user').value = '';
+            refreshQueue();
+        }
+
+        async function refreshQueue() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+                const qList = document.getElementById('queue-list');
+                
+                if (Object.keys(data).length === 0) {
+                    qList.innerHTML = '<div class="text-gray-500 text-center italic">No active downloads</div>';
+                    return;
+                }
+
+                qList.innerHTML = '';
+                for (const [taskId, task] of Object.entries(data)) {
+                    let statusColor = 'text-gray-400';
+                    let statusText = task.status;
+                    
+                    if (task.status === 'completed') statusColor = 'text-green-500';
+                    if (task.status === 'failed') statusColor = 'text-red-500';
+                    if (task.status === 'running') {
+                        statusColor = 'text-blue-400';
+                        statusText = 'downloading...';
+                    }
+
+                    const div = document.createElement('div');
+                    div.className = 'bg-gray-800 p-3 rounded-lg flex justify-between items-center';
+                    div.innerHTML = `
+                        <div class="truncate w-2/3">
+                            <span class="font-bold text-xs uppercase bg-gray-700 px-2 py-1 rounded mr-2">${task.platform}</span>
+                            <span class="text-sm truncate" title="${task.url}">${task.url}</span>
+                        </div>
+                        <div class="text-sm font-semibold capitalize ${statusColor}">${statusText}</div>
+                    `;
+                    qList.appendChild(div);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Auto refresh
+        setInterval(refreshQueue, 2000);
+        refreshQueue();
+    </script>
+</body>
+</html>
