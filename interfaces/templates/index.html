@@ -23,7 +23,7 @@
             <p class="text-gray-400 text-lg">YouTube & Instagram Media Extraction Platform</p>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             <!-- YouTube Form -->
             <div class="glass p-6 rounded-2xl shadow-xl transition hover:shadow-2xl hover:border-pink-500/30">
                 <h2 class="text-2xl font-bold mb-6 flex items-center text-red-500">
@@ -75,8 +75,22 @@
                     </button>
                 </form>
             </div>
-        </div>
+            </div>
 
+            <!-- TikTok Form -->
+            <div class="glass p-6 rounded-2xl shadow-xl transition hover:shadow-2xl hover:border-cyan-500/30">
+                <h2 class="text-2xl font-bold mb-6 flex items-center text-cyan-400">
+                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.78-1.15 5.54-3.33 7.39-2.19 1.88-5.18 2.68-8.03 2.15-2.85-.53-5.32-2.31-6.66-4.88-1.35-2.58-1.54-5.71-.34-8.41 1.2-2.71 3.58-4.74 6.44-5.37 1.63-.36 3.32-.34 4.93.04v4.09c-1.11-.31-2.31-.31-3.41-.01-1.1.3-2.09.95-2.73 1.88-.65.93-.93 2.11-.8 3.24.13 1.13.68 2.19 1.54 2.95.86.76 2.01 1.18 3.16 1.15 1.14-.03 2.25-.5 3.06-1.28.81-.78 1.34-1.84 1.48-2.98.07-.63.07-1.28.05-1.92-.05-3.56-.05-7.12-.04-10.68z"/></svg>
+                    TikTok
+                </h2>
+                <form id="tk-form" onsubmit="submitTK(event)">
+                    <input type="text" id="tk-url" placeholder="TikTok Video URL" class="w-full bg-gray-800 rounded-lg p-3 mb-4 focus:ring-2 focus:ring-cyan-500 outline-none" required>
+                    <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-[1.02]">
+                        Download HD
+                    </button>
+                </form>
+            </div>
+        </div>
         <!-- Task Queue -->
         <div class="glass p-6 rounded-2xl shadow-xl">
             <h3 class="text-xl font-bold mb-4">Live Queue Status</h3>
@@ -135,6 +149,18 @@
             
             await fetch('/api/download/instagram', { method: 'POST', body: formData });
             document.getElementById('ig-url').value = '';
+            refreshQueue();
+        }
+
+        async function submitTK(e) {
+            e.preventDefault();
+            const url = document.getElementById('tk-url').value;
+            
+            const formData = new FormData();
+            formData.append('url', url);
+            
+            await fetch('/api/download/tiktok', { method: 'POST', body: formData });
+            document.getElementById('tk-url').value = '';
             refreshQueue();
         }
 

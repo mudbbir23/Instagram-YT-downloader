@@ -8,6 +8,7 @@ import os
 from utils.file_manager import FileManager
 from core.youtube import YouTubeDownloader
 from core.instagram import InstagramDownloader
+from core.tiktok import TikTokDownloader
 from core.viral_engine import ViralEngine
 from services.queue_manager import queue_manager
 
@@ -21,6 +22,7 @@ templates = Jinja2Templates(directory=templates_dir)
 fm = FileManager()
 yt_downloader = YouTubeDownloader(fm)
 ig_downloader = InstagramDownloader(fm)
+tk_downloader = TikTokDownloader(fm)
 
 @app.on_event("startup")
 async def startup_event():
@@ -42,6 +44,16 @@ async def api_download_youtube(url: str = Form(...), audio_only: bool = Form(Fal
         return await yt_downloader.async_download(url, audio_only=audio_only)
         
     await queue_manager.add_task(task_id, "youtube", url, _yt_task)
+    return {"status": "queued", "task_id": task_id}
+
+@app.post("/api/download/tiktok")
+async def api_download_tiktok(url: str = Form(...)):
+    task_id = str(uuid.uuid4())
+    
+    async def _tk_task():
+        return await tk_downloader.async_download(url)
+        
+    await queue_manager.add_task(task_id, "tiktok", url, _tk_task)
     return {"status": "queued", "task_id": task_id}
 
 @app.post("/api/download/instagram")
