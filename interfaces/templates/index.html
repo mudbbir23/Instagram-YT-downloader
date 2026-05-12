@@ -90,8 +90,30 @@
                     </button>
                 </form>
             </div>
+            </div>
         </div>
-        <!-- Task Queue -->
+
+        <!-- YouTube Thumbnail Downloader -->
+        <div class="glass p-6 rounded-2xl shadow-xl mb-12 transition hover:shadow-2xl hover:border-yellow-500/30">
+            <h2 class="text-2xl font-bold mb-2 flex items-center text-yellow-400">
+                <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                YouTube Thumbnail Downloader
+                <span class="ml-3 text-xs font-semibold bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded-full">HD</span>
+            </h2>
+            <p class="text-gray-400 text-sm mb-5">Downloads the highest available resolution thumbnail (up to 1280×720 maxresdefault).</p>
+            <form id="thumb-form" onsubmit="submitThumb(event)" class="flex flex-col sm:flex-row gap-3">
+                <input type="text" id="thumb-url" placeholder="Paste any YouTube video URL…" class="flex-1 bg-gray-800 rounded-lg p-3 focus:ring-2 focus:ring-yellow-500 outline-none" required>
+                <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-6 rounded-lg transition transform hover:scale-[1.02] whitespace-nowrap">
+                    Get Thumbnail
+                </button>
+            </form>
+            <!-- Preview area -->
+            <div id="thumb-preview" class="mt-5 hidden">
+                <p class="text-xs text-gray-500 mb-2">Preview — file saved to <code class="text-yellow-400">downloads/thumbnails/youtube/</code></p>
+                <img id="thumb-img" src="" alt="Thumbnail preview" class="rounded-xl max-w-full border border-white/10">
+            </div>
+        </div>
+
         <div class="glass p-6 rounded-2xl shadow-xl">
             <h3 class="text-xl font-bold mb-4">Live Queue Status</h3>
             <div id="queue-list" class="space-y-3 max-h-64 overflow-y-auto pr-2">
@@ -161,6 +183,28 @@
             
             await fetch('/api/download/tiktok', { method: 'POST', body: formData });
             document.getElementById('tk-url').value = '';
+            refreshQueue();
+        }
+
+        async function submitThumb(e) {
+            e.preventDefault();
+            const url = document.getElementById('thumb-url').value;
+
+            // Show instant CDN preview while the backend saves the file
+            const videoIdMatch = url.match(/(?:v=|youtu\.be\/|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+            if (videoIdMatch) {
+                const vid = videoIdMatch[1];
+                const previewEl = document.getElementById('thumb-preview');
+                const imgEl = document.getElementById('thumb-img');
+                imgEl.src = `https://img.youtube.com/vi/${vid}/maxresdefault.jpg`;
+                previewEl.classList.remove('hidden');
+            }
+
+            const formData = new FormData();
+            formData.append('url', url);
+
+            await fetch('/api/download/thumbnail', { method: 'POST', body: formData });
+            document.getElementById('thumb-url').value = '';
             refreshQueue();
         }
 
